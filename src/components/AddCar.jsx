@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios'
+import NavBar from './NavBar'
 
 const AddCar = () => {
 
@@ -16,25 +17,60 @@ const AddCar = () => {
         availability_status: "Available"
     })
 
+    const [message, setMessage] = useState("")
+    const [color, setColor] = useState("green")
 
     const inputHandler = (event) => {
-        changeInput({...input,[event.target.name]: event.target.value})
+        changeInput({
+            ...input,
+            [event.target.name]: event.target.value
+        })
     }
 
     const readValue = () => {
-        console.log(input)
+
         axios.post("https://host-demo-app.onrender.com/api/add-car", input).then(
             (response) => {
 
-                console.log(response.data)
-                }).catch()
+                setColor("green")
+                setMessage("Car added successfully")
+
+                changeInput({
+                    registration_number: "",
+                    brand: "",
+                    model: "",
+                    vehicle_type: "",
+                    fuel_type: "",
+                    transmission: "",
+                    seating_capacity: "",
+                    rent_per_day: "",
+                    city: "",
+                    availability_status: "Available"
+                })
+
+            }
+        ).catch(
+            (error) => {
+                setColor("red")
+                setMessage(error.response.data.message)
+            }
+        )
     }
 
     return (
+        <>
+        <NavBar/>
         <div className="container mt-5">
             <div className="card shadow p-4">
 
                 <h2 className="text-center mb-4">Add Car</h2>
+
+                {message !== "" &&
+                    <h5 className="text-center" style={{ color: color }}>
+                        {message}
+                    </h5>
+                }
+
                 <div className="row g-3">
 
                     <div className="col-md-6">
@@ -178,6 +214,7 @@ const AddCar = () => {
 
             </div>
         </div>
+        </>
     )
 }
 
